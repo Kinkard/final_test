@@ -85,7 +85,9 @@ int main(int argc, char **argv)
   connection_pull_ptr pull(new connection_pull);
   std::deque<std::thread> t_pull;
   // create threads pull
+  std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
+    std::cout << "sthread pushed!" << std::endl;
     t_pull.emplace_back(std::thread(std::bind(connetion_handler, pull)));
     std::cout << "thread pushed fetched!" << std::endl;
   }
