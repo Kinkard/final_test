@@ -222,10 +222,10 @@ void* connetion_handler(void *arg)
             while (is.read(buf, sizeof(buf)).gcount() > 0)
               rep.content.append(buf, is.gcount());
             rep.headers.resize(2);
-            rep.headers[0].name = "Content-Length";
-            rep.headers[0].value = std::to_string(rep.content.size());
-            rep.headers[1].name = "Content-Type";
-            rep.headers[1].value = extension_to_type(extension);
+            rep.headers[0].name = "Content-Length: ";
+            rep.headers[0].value = std::to_string(rep.content.size()) + "\r\n";
+            rep.headers[1].name = "Content-Type: ";
+            rep.headers[1].value = extension_to_type(extension) + "\r\n";
           }
           else
               rep = reply::stock_reply(reply::not_found);
