@@ -85,8 +85,10 @@ int main(int argc, char **argv)
   connection_pull_ptr pull(new connection_pull);
   std::deque<std::thread> t_pull;
   // create threads pull
-  for (size_t i = 0; i < THREAD_COUNT; ++i)
+  for (size_t i = 0; i < THREAD_COUNT; ++i) {
     t_pull.emplace_back(std::thread(std::bind(connetion_handler, pull)));
+    std::cout << "thread pushed fetched!" << std::endl;
+  }
 
   std::cout << "startup endless loop" << std::endl;
   // endless loop for socket accepting
@@ -162,6 +164,7 @@ void connetion_handler(connection_pull_ptr pull)
     socket_ptr sock;
     {
       std::unique_lock<std::mutex> ul(pull->guard);
+      std::cout << "thread starts wait!" << std::endl;
       while (!pull->sockets.size()) // loop to avoid spurious wakeups
         pull->new_added.wait(ul);
 
