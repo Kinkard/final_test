@@ -9,7 +9,14 @@ else()
 	include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-find_package(Threads)
+find_package(Threads REQUIRED)
+if(THREADS_HAVE_PTHREAD_ARG)
+  set_property(TARGET my_app PROPERTY COMPILE_OPTIONS "-pthread")
+  set_property(TARGET my_app PROPERTY INTERFACE_COMPILE_OPTIONS "-pthread")
+endif()
+if(NOT CMAKE_THREAD_LIBS_INIT)
+  return()
+endif()
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
