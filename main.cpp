@@ -58,7 +58,18 @@ int main(int argc, char **argv)
     };
   }
 
-  // startup boost asio
+  int pid = fork();
+  if(pid)
+    return 0;
+
+  umask(0);
+  setsid();
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+
+    // startup boost asio
   boost::asio::io_service io_service;
   tcp::endpoint endpoint(ip::address::from_string(ip), atoi(port));
   tcp::acceptor acceptor(io_service, endpoint);
