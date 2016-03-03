@@ -6,6 +6,7 @@
 #define FINAL_REQUEST_PARSER_H
 
 #include <tuple>
+#include "reply.h"
 
 /// A request received from a client.
 struct request

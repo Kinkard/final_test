@@ -147,8 +147,12 @@ void connetion_handler(connection_pull_ptr pull)
     request_parser request_parser_;
     request request_;
     reply rep;
-    if (request_parser::good == request_parser_.parse(
-        request_, data.data(), data.data() + bytes_transferred))
+
+    request_parser::result_type result;
+    std::tie(result, std::ignore) = request_parser_.parse(
+        request_, data.data(), data.data() + bytes_transferred);
+
+    if(result == request_parser::good)
     {
       std::string request_path;
       if (url_decode(request_.uri, request_path))
