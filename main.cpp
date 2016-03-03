@@ -70,21 +70,25 @@ int main(int argc, char **argv)
     setsid();
 
     close(STDIN_FILENO);
-    close(STDOUT_FILENO);
+//    close(STDOUT_FILENO);
     close(STDERR_FILENO);
   }
 
+  std::cout << "ip: " << ip << " port: " << port << " directory: " << directory << std::endl;
+  std::cout << "startup asio" << std::endl;
   // startup boost asio
   boost::asio::io_service io_service;
   tcp::endpoint endpoint(ip::address::from_string(ip), atoi(port));
   tcp::acceptor acceptor(io_service, endpoint);
 
+  std::cout << "startup threads" << std::endl;
   connection_pull_ptr pull(new connection_pull);
   std::deque<std::thread> t_pull;
   // create threads pull
   for (size_t i = 0; i < THREAD_COUNT; ++i)
     t_pull.emplace_back(std::thread(std::bind(connetion_handler, pull)));
 
+  std::cout << "startup endless loop" << std::endl;
   // endless loop for socket accepting
   for(;;)
   {
@@ -93,6 +97,8 @@ int main(int argc, char **argv)
 
     // listen
     acceptor.accept(*sock);
+
+    std::cout << "conection fetched!" << std::endl;
 
     // push back to pull and notify all threads
     std::unique_lock<std::mutex> ul(pull->guard);
@@ -163,6 +169,8 @@ void connetion_handler(connection_pull_ptr pull)
       pull->sockets.pop_front();
     }
 
+
+    std::cout << "start processing" << std::endl;
     //do smth with socket
     std::array<char, 1024> data;
 
@@ -226,5 +234,7 @@ void connetion_handler(connection_pull_ptr pull)
     sock->write_some(rep.to_buffers());
 
     sock->close();
+
+    std::cout << "processing finished!" << std::endl;
   }
 }
