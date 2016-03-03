@@ -9,10 +9,13 @@ else()
 	include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+find_package(Threads)
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES main.cpp reply.cpp request_parser.cpp)
 
 add_executable(final ${SOURCE_FILES})
 
-target_link_libraries(final ${Boost_LIBRARIES})
+target_link_libraries(final ${Boost_LIBRARIES} ${CMAKE_THREADS_LIBS_INIT})
