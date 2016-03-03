@@ -16,7 +16,6 @@
 
 #include "mime_types.hpp"
 #include "request_parser.h"
-#include "reply.h"
 
 using namespace boost::asio;
 using boost::asio::ip::tcp;
@@ -42,8 +41,11 @@ int main(int argc, char **argv)
 {
   char ip[MAX_ARG], port[MAX_ARG];
 
+  bool daemon_mode = false;
+
   // get input args
-  while(int c = getopt(argc, argv, "h:p:d:t") != -1)
+  int c;
+  while((c = getopt(argc, argv, "h:p:d:t")) != -1)
   {
     switch (c)
     {
@@ -53,31 +55,35 @@ int main(int argc, char **argv)
 
       case 'd': strncpy(directory, optarg, MAX_ARG); break;
 
-      //case 't': daemon_mode = false; break;
+      case 't': daemon_mode = false; break;
 
     };
   }
 
-  int pid = fork();
-  if(pid)
-    return 0;
+  if(daemon_mode)
+  {
+    int pid = fork();
+    if (pid)
+      return 0;
 
-  umask(0);
-  setsid();
+    umask(0);
+    setsid();
 
-  close(STDIN_FILENO);
-  close(STDOUT_FILENO);
-  close(STDERR_FILENO);
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+  }
 
-    // startup boost asio
+  // startup boost asio
   boost::asio::io_service io_service;
   tcp::endpoint endpoint(ip::address::from_string(ip), atoi(port));
   tcp::acceptor acceptor(io_service, endpoint);
 
   connection_pull_ptr pull(new connection_pull);
+  std::deque<std::thread> t_pull;
   // create threads pull
   for (size_t i = 0; i < THREAD_COUNT; ++i)
-    std::thread(std::bind(connetion_handler, pull));
+    t_pull.emplace_back(std::thread(std::bind(connetion_handler, pull)));
 
   // endless loop for socket accepting
   for(;;)
@@ -170,8 +176,11 @@ void connetion_handler(connection_pull_ptr pull)
       std::string request_path;
       if (url_decode(request_.uri, request_path))
       {
-        if (request_path.empty() || request_path[0] != '/'
-            || request_path.find("..") != std::string::npos)
+        // for debug purpose
+        bool empty = request_path.empty();
+        bool no_start_with_slash = request_path[0] != '/';
+        bool try_to_up = request_path.find("..") != std::string::npos;
+        if (!empty && !no_start_with_slash && !try_to_up)
         {
           std::size_t last_slash_pos = request_path.find_last_of("/");
           std::size_t last_dot_pos = request_path.find_last_of(".");
