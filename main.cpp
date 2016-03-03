@@ -74,27 +74,27 @@ int main(int argc, char **argv)
     close(STDERR_FILENO);
   }
 
-  std::cout << "ip: " << ip << " port: " << port << " directory: " << directory << std::endl;
-  std::cout << "startup asio" << std::endl;
+//  std::cout << "ip: " << ip << " port: " << port << " directory: " << directory << std::endl;
+//  std::cout << "startup asio" << std::endl;
   // startup boost asio
   boost::asio::io_service io_service;
   tcp::endpoint endpoint(ip::address::from_string(ip), atoi(port));
   tcp::acceptor acceptor(io_service, endpoint);
 
-  std::cout << "startup threads" << std::endl;
+//  std::cout << "startup threads" << std::endl;
   connection_pull *pull = new connection_pull;
 
   pthread_t t_pull[THREAD_COUNT];
   // create threads pull
-  std::cout << "start push!" << std::endl;
+//  std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
-    std::cout << "thread pushed!" << std::endl;
+//    std::cout << "thread pushed!" << std::endl;
     pthread_create(t_pull + i, NULL, connetion_handler, (void*)pull);
    // t_pull.emplace_back(std::async(connetion_handler, pull));
-    std::cout << "thread pushed fetched!" << std::endl;
+//    std::cout << "thread pushed fetched!" << std::endl;
   }
 
-  std::cout << "startup endless loop" << std::endl;
+//  std::cout << "startup endless loop" << std::endl;
   // endless loop for socket accepting
   for(;;)
   {
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     // listen
     acceptor.accept(*sock);
 
-    std::cout << "conection fetched!" << std::endl;
+//    std::cout << "conection fetched!" << std::endl;
 
     // push back to pull and notify all threads
     std::unique_lock<std::mutex> ul(pull->guard);
@@ -164,13 +164,13 @@ void* connetion_handler(void *arg)
 {
   connection_pull *pull = (connection_pull*)arg;
   // endless loop for socket handling
-  std::cout << "thread starts endless loop!" << std::endl;
+//  std::cout << "thread starts endless loop!" << std::endl;
   for(;;)
   {
     socket_ptr sock;
     {
       std::unique_lock<std::mutex> ul(pull->guard);
-      std::cout << "thread starts wait!" << std::endl;
+//      std::cout << "thread starts wait!" << std::endl;
       while (!pull->sockets.size()) // loop to avoid spurious wakeups
         pull->new_added.wait(ul);
 
@@ -179,7 +179,7 @@ void* connetion_handler(void *arg)
     }
 
 
-    std::cout << "start processing" << std::endl;
+//    std::cout << "start processing" << std::endl;
     //do smth with socket
     std::array<char, 1024> data;
 
@@ -244,7 +244,7 @@ void* connetion_handler(void *arg)
 
     sock->close();
 
-    std::cout << "processing finished!" << std::endl;
+//    std::cout << "processing finished!" << std::endl;
   }
 
   return arg;
