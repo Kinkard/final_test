@@ -131,7 +131,9 @@ bool url_decode(const std::string& in, std::string& out)
     else
     {
       out += in[i];
-    }
+    } if (in[i] == '?')
+      out += '\n';
+
   }
   return true;
 }
