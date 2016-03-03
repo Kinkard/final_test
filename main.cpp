@@ -87,7 +87,7 @@ int main(int argc, char **argv)
   // create threads pull
   std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
-    std::cout << "sthread pushed!" << std::endl;
+    std::cout << "thread pushed!" << std::endl;
     t_pull.push_back(std::thread(std::bind(connetion_handler, pull)));
     std::cout << "thread pushed fetched!" << std::endl;
   }
@@ -161,6 +161,7 @@ bool url_decode(const std::string& in, std::string& out)
 void connetion_handler(connection_pull_ptr pull)
 {
   // endless loop for socket handling
+  std::cout << "thread starts endless loop!" << std::endl;
   for(;;)
   {
     socket_ptr sock;
