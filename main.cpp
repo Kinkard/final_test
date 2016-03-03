@@ -88,7 +88,7 @@ int main(int argc, char **argv)
   std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
     std::cout << "thread pushed!" << std::endl;
-    t_pull.push_back(std::thread(std::bind(connetion_handler, pull)));
+    t_pull.push_back(std::thread(connetion_handler, pull));
     std::cout << "thread pushed fetched!" << std::endl;
   }
 
