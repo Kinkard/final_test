@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 {
   char ip[MAX_ARG], port[MAX_ARG];
 
-  bool daemon_mode = false;
+  bool daemon_mode = true;
 
   // get input args
   int c;
