@@ -6,7 +6,7 @@
 
 // for connection pull
 #include <deque>
-#include <thread>
+#include <pthread.h>
 #include <mutex>
 #include <condition_variable>
 
@@ -34,7 +34,7 @@ struct connection_pull
   std::condition_variable new_added;
 };
 
-void connetion_handler(connection_pull_ptr pull);
+void* connetion_handler(void *arg);
 
 char directory[MAX_ARG];
 int main(int argc, char **argv)
@@ -82,13 +82,15 @@ int main(int argc, char **argv)
   tcp::acceptor acceptor(io_service, endpoint);
 
   std::cout << "startup threads" << std::endl;
-  connection_pull_ptr pull(new connection_pull);
-  std::deque<std::thread> t_pull;
+  connection_pull *pull = new connection_pull;
+
+  pthread_t t_pull[THREAD_COUNT];
   // create threads pull
   std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
     std::cout << "thread pushed!" << std::endl;
-    t_pull.push_back(std::thread(connetion_handler, pull));
+    pthread_create(t_pull + i, NULL, connetion_handler, (void*)pull);
+   // t_pull.emplace_back(std::async(connetion_handler, pull));
     std::cout << "thread pushed fetched!" << std::endl;
   }
 
@@ -158,8 +160,9 @@ bool url_decode(const std::string& in, std::string& out)
   return true;
 }
 
-void connetion_handler(connection_pull_ptr pull)
+void* connetion_handler(void *arg)
 {
+  connection_pull *pull = (connection_pull*)arg;
   // endless loop for socket handling
   std::cout << "thread starts endless loop!" << std::endl;
   for(;;)
@@ -243,4 +246,6 @@ void connetion_handler(connection_pull_ptr pull)
 
     std::cout << "processing finished!" << std::endl;
   }
+
+  return arg;
 }
