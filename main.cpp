@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     };
   }
 
-  if(daemon_mode)
+  if(daemon_mode && true)
   {
     int pid = fork();
     if (pid)
