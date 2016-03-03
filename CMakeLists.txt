@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(Final)
+project(final)
 
 find_package(Boost COMPONENTS system REQUIRED)
 if(NOT Boost_FOUND)
