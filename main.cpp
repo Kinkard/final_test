@@ -134,11 +134,15 @@ bool url_decode(const std::string& in, std::string& out)
     {
       out += ' ';
     }
+    else if (in[i] == '?')
+    {
+      out += '\0';
+    }
     else
     {
       out += in[i];
-    } if (in[i] == '?')
-      out += '\n';
+    }
+
 
   }
   return true;
