@@ -74,8 +74,8 @@ int main(int argc, char **argv)
     close(STDERR_FILENO);
   }
 
-  std::cout << "ip: " << ip << " port: " << port << " directory: " << directory << std::endl;
-  std::cout << "startup asio" << std::endl;
+//  std::cout << "ip: " << ip << " port: " << port << " directory: " << directory << std::endl;
+//  std::cout << "startup asio" << std::endl;
   // startup boost asio
   boost::asio::io_service io_service;
   tcp::endpoint endpoint(ip::address::from_string(ip), atoi(port));
@@ -84,18 +84,18 @@ int main(int argc, char **argv)
   if(!acceptor.is_open())
     return 0;
 
-  std::cout << "startup threads" << std::endl;
+//  std::cout << "startup threads" << std::endl;
   connection_pull *pull = new connection_pull;
 
   pthread_t t_pull[THREAD_COUNT];
   // create threads pull
-  std::cout << "start push!" << std::endl;
+//  std::cout << "start push!" << std::endl;
   for (size_t i = 0; i < THREAD_COUNT; ++i) {
-    std::cout << "thread #" << i << " created!" << std::endl;
+//    std::cout << "thread #" << i << " created!" << std::endl;
     pthread_create(t_pull + i, NULL, connetion_handler, (void*)pull);
   }
 
-  std::cout << "startup socket accepting endless loop" << std::endl;
+//  std::cout << "startup socket accepting endless loop" << std::endl;
   // endless loop for socket accepting
   for(;;)
   {
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     // listen
     acceptor.accept(*sock);
 
-    std::cout << "conection fetched!" << std::endl;
+//    std::cout << "conection fetched!" << std::endl;
 
     // push back to pull and notify all threads
     std::unique_lock<std::mutex> ul(pull->guard);
@@ -133,7 +133,7 @@ void* connetion_handler(void *arg)
     }
 
 
-    std::cout << "start processing connection" << std::endl;
+//    std::cout << "start processing connection" << std::endl;
     //do smth with socket
     std::array<char, 1024> data;
 
@@ -144,18 +144,18 @@ void* connetion_handler(void *arg)
 
     request_parser::result_type result = request_parser_.parse(
         request_, data.data(), data.data() + bytes_transferred);
-    switch (result)
-    {
-      case request_parser::good:
-        std::cout << "Good request" << std::endl;
-        break;
-      case request_parser::indeterminate:
-        std::cout << "Intermidiate request" << std::endl;
-        break;
-      case request_parser::bad:
-        std::cout << "Bad request" << std::endl;
-        break;
-    }
+//    switch (result)
+//    {
+//      case request_parser::good:
+//        std::cout << "Good request" << std::endl;
+//        break;
+//      case request_parser::indeterminate:
+//        std::cout << "Intermidiate request" << std::endl;
+//        break;
+//      case request_parser::bad:
+//        std::cout << "Bad request" << std::endl;
+//        break;
+//    }
 
 
     if(result == request_parser::good)
