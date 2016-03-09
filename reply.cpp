@@ -51,7 +51,11 @@ std::vector<boost::asio::const_buffer> reply::to_buffers()
 namespace stock_replies {
 
     const char ok[] = "";
-    const char not_found[] ="HTTP/1.0 404 NOT FOUND\r\nContent-Type: text/html\r\n\r\n";
+    const char not_found[] =
+        "<html>"
+            "<head><title>Not Found</title></head>"
+            "<body><h1>404 Not Found</h1></body>"
+            "</html>";
 
     std::string to_string(reply::status_type status)
     {
@@ -72,9 +76,9 @@ reply reply::stock_reply(reply::status_type status)
   rep.status = status;
   rep.content = stock_replies::to_string(status);
   rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length: ";
-  rep.headers[0].value = std::to_string(rep.content.size()) + "\r\n";
+  rep.headers[0].name = "Content-Length";
+  rep.headers[0].value = std::to_string(rep.content.size());
   rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = "text/html\r\n\"";
+  rep.headers[1].value = "text/html";
   return rep;
 }
